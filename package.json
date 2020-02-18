@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
+    "test": "vue-cli-service build --mode test",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -29,10 +30,14 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
+   
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "no-console":"off",
+      "no-unused-vars":"off"
+    }
   },
   "browserslist": [
     "> 1%",
