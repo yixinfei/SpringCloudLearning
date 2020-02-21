@@ -20,6 +20,70 @@
   </div>
 </template>
 
+
+
+<script>
+import {encrypt} from '@/assets/js/cryptoJS'
+export default {
+  name: "login",
+  data() {
+    return {
+      formLogin: {
+        //表单对象
+        account: "admin",
+        password: "1234"
+      },
+      errorInfo: {
+        text: "登陆失败,请重试",
+        isShowError: false //显示错误提示
+      }
+    };
+  },
+  mounted() {
+    document.onkeydown = event => {
+      //var router=this.$route.path;
+      var e = event || window.event || arguments.callee.caller.arguments[0];
+      if (e && e.keyCode == 13 && this.$route.path == "/login") {
+        // enter 键
+        this.login();
+      }
+    };
+  },
+  methods: {
+    async login() {
+      if (!this.formLogin.account) {
+        this.$message.error('请输入账号');
+        return;
+      }
+      if (!this.formLogin.password) {
+        this.$message.error('请输入密码');
+        return;
+      }
+      const password= encrypt(this.formLogin.password);
+      const res = await this.$http.post("/login", {
+        account: this.formLogin.account,
+        password: password
+      });
+      console.log("hhe:", res);
+      const {
+        meta: { status, msg },
+        data: { token, name, id, account, state, headPortrait }
+      } = res;
+      if (status != 200) {
+        this.errorInfo.isShowError = true;
+        this.$message.error(msg);
+        return false;
+      }
+      this.$message.success(msg);
+      sessionStorage.setItem("token", token);
+      this.$store.commit("add_User", res.data);
+
+      this.$router.push("/home");
+    }
+  }
+};
+</script>
+
 <style lang="scss">
 $input_width: 300px;
 
@@ -68,51 +132,3 @@ $input_width: 300px;
   color: #505458;
 }
 </style>
-
-<script>
-export default {
-  name: "login",
-  data() {
-    return {
-      formLogin: {
-        //表单对象
-        account: "admin",
-        password: "1234"
-      },
-      errorInfo: {
-        text: "登陆失败,请重试",
-        isShowError: false //显示错误提示
-      }
-    };
-  },
-  mounted() {
-    document.onkeydown = event => {
-      //var router=this.$route.path;
-
-      var e = event || window.event || arguments.callee.caller.arguments[0];
-      if (e && e.keyCode == 13 && this.$route.path == "/login") {
-        // enter 键
-        this.login();
-      }
-    };
-  },
-  methods: {
-    async login() {
-      const data = await this.$http.post("/login", this.formLogin);
-      console.log("hhe:",data);
-      const {
-        meta: { status, msg },
-        data: { token, name, id, account, password, state }
-      } = data;
-      if (status != 200) {
-        this.$message.error(msg);
-        return false;
-      }
-      this.$message.success(msg);
-      sessionStorage.setItem("token", token);
-      
-      //this.$router.push('/home')
-    }
-  }
-};
-</script>

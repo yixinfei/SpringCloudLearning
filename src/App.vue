@@ -4,6 +4,6 @@
     </div>
 </template>
 <style>
-    @import "../static/css/main.css";
-    @import "../static/css/theme-green/color-green.css"; 
+    @import "assets/css/main.css";
+    @import "assets/css/theme-green/color-green.css"; 
 </style>
