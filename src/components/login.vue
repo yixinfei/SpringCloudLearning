@@ -67,7 +67,6 @@ export default {
       console.log("hhe:", res);
       const {
         meta: { status, msg },
-        data: { token, name, id, account, state, headPortrait }
       } = res;
       if (status != 200) {
         this.errorInfo.isShowError = true;
@@ -75,9 +74,9 @@ export default {
         return false;
       }
       this.$message.success(msg);
-      sessionStorage.setItem("token", token);
-      this.$store.commit("add_User", res.data);
-
+      sessionStorage.setItem("token", res.data.user.token);
+      this.$store.commit("add_User", res.data.user);
+      this.$store.commit("add_Menus", res.data.menus);
       this.$router.push("/home");
     }
   }
