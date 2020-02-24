@@ -4,15 +4,15 @@
       class="sidebar-el-menu"
       :default-active="onRoutes"
       :collapse="collapse"
-      background-color="#324157"
+      background-color="#303133"
       text-color="#bfcbd9"
-      active-text-color="#20a0ff"
+      active-text-color="#00d1b2"
       unique-opened
       router
     >
       <template v-for="(item,i) in menuList">
         <!-- <template v-if="item.subs&&item.subs.length"> -->
-        <el-submenu :index="item.index" :key="i">
+        <el-submenu :index="item.index" :key="i" style>
           <template slot="title">
             <i :class="item.icon"></i>
             <span slot="title">{{ item.title }}</span>
@@ -62,6 +62,7 @@ export default {
   top: 70px;
   bottom: 0;
   overflow-y: scroll;
+  background-color: #1b1c23;
 }
 .sidebar::-webkit-scrollbar {
   width: 0;

@@ -16,13 +16,6 @@ const router = new Router({
             }
         },
         {
-            path: '/home',
-            component: () => import('@/components/common/Home'),
-            meta: {
-                title: '登陆'
-            }
-        },
-        {
             path: '/404',
             component: () => import('@/components/common/404'),
         },
@@ -30,17 +23,17 @@ const router = new Router({
             path: '/403',
             component: () => import('@/components/common/403'),
         },
-        {
-            path: '*',
-            redirect: '/404'
-        }
+       
     ],
     mode: 'history'
 });
 
 
-
-
+//标签关闭所有 关闭其他防止报错
+const routerPush = Router.prototype.push
+Router.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch(error=> error)
+}
 
 //全局路由守卫
 router.beforeEach((to, from, next) => {

@@ -9,7 +9,7 @@
           <el-input v-model="formLogin.account" placeholder="账号"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-input v-model="formLogin.password" placeholder="密码"></el-input>
+          <el-input type='password' v-model="formLogin.password" placeholder="密码"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="login">登陆</el-button>
@@ -77,7 +77,9 @@ export default {
       sessionStorage.setItem("token", res.data.user.token);
       this.$store.commit("add_User", res.data.user);
       this.$store.commit("add_Menus", res.data.menus);
-      this.$router.push("/home");
+      this.$store.commit("add_Routes", res.data.routes);
+
+      this.$router.push("/index");
     }
   }
 };

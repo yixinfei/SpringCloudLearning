@@ -1,7 +1,7 @@
 <template>
     <div class="tags" v-if="showTags">
         <ul>
-            <li class="tags-li" v-for="(item,index) in tagsList" :class="{'active': isActive(item.path)}" :key="index">
+            <li class="tags-li" @dblclick="closeTags(index)" v-for="(item,index) in tagsList" :class="{'active': isActive(item.path)}" :key="index">
                 <router-link :to="item.path" class="tags-li-title">
                     {{item.title}}
                 </router-link>
@@ -38,6 +38,9 @@
             },
             // 关闭单个标签
             closeTags(index) {
+                if(index === 0){
+                    return;
+                }
                 const delItem = this.tagsList.splice(index, 1)[0];
                 const item = this.tagsList[index] ? this.tagsList[index] : this.tagsList[index - 1];
                 if (item) {
@@ -53,17 +56,18 @@
                     path: "/index",
                     title: "系统首页"
                 }];
-                this.$router.push('/');
+                this.$router.push('/index');
             },
             // 关闭其他标签
             closeOther(){
                 const curItem = this.tagsList.filter(item => {
-                    return item.path === this.$route.fullPath;
+                    return item.path === this.$route.fullPath || item.name==='index';
                 })
                 this.tagsList = curItem;
             },
             // 设置标签
             setTags(route){
+
                 const isExist = this.tagsList.some(item => {
                     return item.path === route.fullPath;
                 })
@@ -90,6 +94,11 @@
             }
         },
         created(){
+            this.tagsList = [{
+                    name: "index",
+                    path: "/index",
+                    title: "系统首页"
+                }];
             this.setTags(this.$route);
         }
     }

@@ -18,8 +18,10 @@ const store = new Vuex.Store({
 //刷新加载的方法
 const refresh=function(){
     //页面刷新重新加载路由
-//    store.dispatch('add_Routes_Fresh');
+    store.dispatch('add_Routes_Fresh');
 }
-//console.log("页面刷新,刷入路由");
-//refresh();
+if(sessionStorage.getItem('token')){
+    refresh();
+}
+
 export default store;

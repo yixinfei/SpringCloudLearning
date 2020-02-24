@@ -29,7 +29,7 @@ axios.defaults.timeout = 10000;
 // 请求拦截器
 axios.interceptors.request.use(
     config => {
-        console.log(config);
+       
         if (
             config.method.toLocaleUpperCase() === 'POST' ||
             config.method.toLocaleUpperCase() === 'PUT' ||
@@ -37,8 +37,30 @@ axios.interceptors.request.use(
             config.method.toLocaleUpperCase() === 'OPTIONS' 
            
         ) {
-            if( config.headers.isFormData != true ){
-                console.log("改了")
+            console.log(config.data)
+            console.log(config)
+            for(var key in config.data){
+                if(config.data[key] instanceof File){
+                      let formdata = new FormData();
+                      for(var key1 in config.data){
+                        formdata.append(key1, config.data[key1]);
+                      }
+                      config.data =formdata;
+                   //   config.headers['Content-Type']="multipart/form-data";
+                    break;
+                }
+                if(config.data[key] instanceof Array){
+                        console.log("是数组")
+                      let formdata = new URLSearchParams();
+                      for(var key2 in config.data){
+                        formdata.append(key2, config.data[key2]);
+                      }
+                      config.data =formdata;
+                    break;
+                }
+               
+            }
+            if(!(config.data instanceof URLSearchParams) && !(config.data instanceof FormData)){
                 config.data = Qs.stringify(config.data)
             }
         }
@@ -46,6 +68,7 @@ axios.interceptors.request.use(
         if (null !== window.sessionStorage.getItem('token')) {
             config.headers.token = window.sessionStorage.getItem('token')
         }
+        console.log(config)
         return config;
     },
     error => {

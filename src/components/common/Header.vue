@@ -43,8 +43,8 @@
     </div>
 
     <el-dialog title="修改密码" width="400px" :visible.sync="dialogFormVisibleEditPassword">
-      <el-form :model="formEdit">
-        <el-form-item label="原始密码" :label-width="formLabelWidth">
+      <el-form :model="formEdit" ref="formEdit" :rules="passwordFormRules">
+        <el-form-item label="原始密码" :label-width="formLabelWidth" prop='oldPassword'>
           <el-input
             clearable
             type="password"
@@ -53,7 +53,7 @@
             placeholder="请输入原始密码"
           ></el-input>
         </el-form-item>
-        <el-form-item label="新密码" :label-width="formLabelWidth">
+        <el-form-item label="新密码" :label-width="formLabelWidth" prop='newPassword'>
           <el-input
             clearable
             type="password"
@@ -62,7 +62,7 @@
             placeholder="请输入新密码"
           ></el-input>
         </el-form-item>
-        <el-form-item label="确认密码" :label-width="formLabelWidth">
+        <el-form-item label="确认密码" :label-width="formLabelWidth" prop='newAgainPassword'>
           <el-input
             clearable
             type="password"
@@ -116,8 +116,8 @@
         <el-col :span="14">
           <!-- 修改信息 -->
           <el-card shadow="always">
-            <el-form :model="formEdit">
-              <el-form-item label="姓名" :label-width="formLabelWidth">
+            <el-form :model="formUser" ref="formUser" :rules="editFormRules">
+              <el-form-item label="姓名" :label-width="formLabelWidth" prop='name'>
                 <el-input clearable v-model="formUser.name" autocomplete="off" placeholder="请输入姓名"></el-input>
               </el-form-item>
               <el-form-item label="性别" :label-width="formLabelWidth">
@@ -127,7 +127,7 @@
                 </el-radio-group>
               </el-form-item>
 
-              <el-form-item label="电话" :label-width="formLabelWidth">
+              <el-form-item label="电话" :label-width="formLabelWidth" prop='phone'>
                 <el-input
                   clearable
                   type="number"
@@ -136,7 +136,7 @@
                   placeholder="请输入电话"
                 ></el-input>
               </el-form-item>
-              <el-form-item label="邮箱" :label-width="formLabelWidth">
+              <el-form-item label="邮箱" :label-width="formLabelWidth" prop='email'>
                 <el-input clearable v-model="formUser.email" autocomplete="off" placeholder="请输入邮箱"></el-input>
               </el-form-item>
             </el-form>
@@ -154,6 +154,15 @@ import bus from "./bus";
 import { encrypt } from "@/assets/js/cryptoJS";
 export default {
   data() {
+    var validatePassworAgain = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.formEdit.newPassword) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        callback();
+      }
+    };
     return {
       tooltipPasswordDisabled: false,
       formLabelWidth: "80px",
@@ -168,7 +177,36 @@ export default {
       dialogFormVisibleMySelf: false,
       imageUrl: "true",
       progressFlag: "",
-      progressPercent: 0
+      progressPercent: 0,
+      passwordFormRules: {
+        newAgainPassword: [
+          { validator: validatePassworAgain, trigger: "blur" }
+        ],
+        oldPassword: [
+          { required: true, message: "请输入原始密码", trigger: "blur" },
+          { min: 1, max: 15, message: "密码在1-15个字符之间", trigger: "blur" }
+        ],
+        newPassword: [
+          { required: true, message: "请输入新密码", trigger: "blur" },
+          { min: 1, max: 15, message: "密码在1-15个字符之间", trigger: "blur" }
+        ]
+      },
+      editFormRules: {
+        name: [
+          { required: true, message: "请输入姓名", trigger: "blur" },
+          { min: 1, max: 5, message: "姓名在1-5个字符之间", trigger: "blur" }
+        ],
+        email: [
+          { type: "email", message: "请输入正确的邮箱", trigger: "blur" }
+        ],
+        phone: [
+          {
+            pattern: /^((0\d{2,3}-\d{7,8})|(1[3584]\d{9}))$/,
+            message: "请输入正确的电话号码",
+            trigger: "blur"
+          }
+        ]
+      }
     };
   },
   computed: {
@@ -224,50 +262,36 @@ export default {
       this.fullscreen = !this.fullscreen;
     },
     //修改密码
-    async editPassword() {
-      if (!this.formEdit.oldPassword) {
-        this.$message.error("请输入原始密码");
-        return;
-      }
-      if (!this.formEdit.newPassword) {
-        this.$message.error("请输入新密码");
-        return;
-      }
-      if (!this.formEdit.newAgainPassword) {
-        this.$message.error("请再次输入旧密码");
-        return;
-      }
-      if (this.formEdit.newPassword !== this.formEdit.newAgainPassword) {
-        this.$message.error("两次输入的密码不一致");
-        return;
-      }
-      //密码加密
-      this.formEditEn.oldPassword = encrypt(this.formEdit.oldPassword);
-      this.formEditEn.newPassword = encrypt(this.formEdit.newPassword);
-      const res = await this.$http.put("users/password", this.formEditEn);
-      console.log(res);
-      if (res.meta.status !== 200) {
-        this.$message.error(res.meta.msg);
-        return;
-      }
-      sessionStorage.setItem("token", res.data.token);
-      this.$message.success(res.meta.msg);
-      this.dialogFormVisibleEditPassword = false;
-      this.formEdit = {};
-      this.formEditEn = {};
+    editPassword() {
+      this.$refs.formEdit.validate(async valid => {
+        if (!valid) {
+          return false;
+        }
+        //密码加密
+        this.formEditEn.oldPassword = encrypt(this.formEdit.oldPassword);
+        this.formEditEn.newPassword = encrypt(this.formEdit.newPassword);
+        const res = await this.$http.put("users/password", this.formEditEn);
+        console.log(res);
+        if (res.meta.status !== 200) {
+          this.$message.error(res.meta.msg);
+          return;
+        }
+        sessionStorage.setItem("token", res.data.token);
+        this.$message.success(res.meta.msg);
+        this.dialogFormVisibleEditPassword = false;
+        this.formEditEn = {};
+        //重置信息
+        this.$refs.formEdit.resetFields();
+      });
     },
 
     uploadImg(f) {
       console.log(f);
       this.progressFlag = true;
-      let formdata = new FormData();
-      formdata.append("image", f.file);
       this.$http({
         url: "/users/image",
         method: "post",
-
-        data: formdata,
-        headers: { "Content-Type": "multipart/form-data", isFormData: true },
+        data: { image: f.file, id: "id" },
         onUploadProgress: progressEvent => {
           // progressEvent.loaded:已上传文件大小
           // progressEvent.total:被上传文件的总大小
@@ -305,25 +329,28 @@ export default {
       }
       return isLt2M;
     },
+
+    //修改用户信息
     async editUser() {
-        if(this.formUser.name == ''){
-          this.$message.error("请输入姓名");
-          return;
+      this.$refs.formUser.validate(async valid => {
+        if (!valid) {
+          return false;
         }
-        const res =await this.$http.put('users',this.formUser);
-        console.log('呵呵',res);
-        if(res.meta.status !=200){
-            this.$message.error(res.meta.msg);
+        const res = await this.$http.put("users", this.formUser);
+        console.log("呵呵", res);
+        if (res.meta.status != 200) {
+          this.$message.error(res.meta.msg);
         }
         this.$message.success(res.meta.msg);
-        this.$store.commit('add_User',this.formUser);
+        this.$store.commit("add_User", this.formUser);
         this.user = JSON.parse(JSON.stringify(this.formUser));
+      });
     }
   },
   mounted() {
     this.user = this.$store.getters.user;
     //两个值之间不联动
-    this.formUser=JSON.parse(JSON.stringify(this.user));
+    this.formUser = JSON.parse(JSON.stringify(this.user));
     if (document.body.clientWidth < 1366) {
       this.collapseChage();
     }

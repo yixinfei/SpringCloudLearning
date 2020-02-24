@@ -11,6 +11,9 @@ import  './request/api'
 //引入elementUI样式框架
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import '../src/assets/element-variables.scss'
+
+
 
 Vue.use(ElementUI);
 new Vue({
