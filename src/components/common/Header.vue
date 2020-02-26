@@ -42,9 +42,14 @@
       </div>
     </div>
 
-    <el-dialog title="修改密码" width="400px" :visible.sync="dialogFormVisibleEditPassword">
+    <el-dialog
+      title="修改密码"
+      width="400px"
+      :visible.sync="dialogFormVisibleEditPassword"
+      :before-close="editPasswordCancel"
+    >
       <el-form :model="formEdit" ref="formEdit" :rules="passwordFormRules">
-        <el-form-item label="原始密码" :label-width="formLabelWidth" prop='oldPassword'>
+        <el-form-item label="原始密码" :label-width="formLabelWidth" prop="oldPassword">
           <el-input
             clearable
             type="password"
@@ -53,7 +58,7 @@
             placeholder="请输入原始密码"
           ></el-input>
         </el-form-item>
-        <el-form-item label="新密码" :label-width="formLabelWidth" prop='newPassword'>
+        <el-form-item label="新密码" :label-width="formLabelWidth" prop="newPassword">
           <el-input
             clearable
             type="password"
@@ -62,7 +67,7 @@
             placeholder="请输入新密码"
           ></el-input>
         </el-form-item>
-        <el-form-item label="确认密码" :label-width="formLabelWidth" prop='newAgainPassword'>
+        <el-form-item label="确认密码" :label-width="formLabelWidth" prop="newAgainPassword">
           <el-input
             clearable
             type="password"
@@ -73,12 +78,17 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisibleEditPassword = false">取 消</el-button>
-        <el-button type="primary" @click="editPassword()">确 定</el-button>
+        <el-button @click="editPasswordCancel">取 消</el-button>
+        <el-button type="primary" @click="editPassword">确 定</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog title="个人中心" width="50%" :visible.sync="dialogFormVisibleMySelf">
+    <el-dialog
+      title="个人中心"
+      width="50%"
+      :visible.sync="dialogFormVisibleMySelf"
+      :before-close="editCancel"
+    >
       <el-row :gutter="20">
         <el-col :span="10">
           <!-- 个人信息 -->
@@ -117,7 +127,7 @@
           <!-- 修改信息 -->
           <el-card shadow="always">
             <el-form :model="formUser" ref="formUser" :rules="editFormRules">
-              <el-form-item label="姓名" :label-width="formLabelWidth" prop='name'>
+              <el-form-item label="姓名" :label-width="formLabelWidth" prop="name">
                 <el-input clearable v-model="formUser.name" autocomplete="off" placeholder="请输入姓名"></el-input>
               </el-form-item>
               <el-form-item label="性别" :label-width="formLabelWidth">
@@ -127,7 +137,7 @@
                 </el-radio-group>
               </el-form-item>
 
-              <el-form-item label="电话" :label-width="formLabelWidth" prop='phone'>
+              <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
                 <el-input
                   clearable
                   type="number"
@@ -136,7 +146,7 @@
                   placeholder="请输入电话"
                 ></el-input>
               </el-form-item>
-              <el-form-item label="邮箱" :label-width="formLabelWidth" prop='email'>
+              <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
                 <el-input clearable v-model="formUser.email" autocomplete="off" placeholder="请输入邮箱"></el-input>
               </el-form-item>
             </el-form>
@@ -227,6 +237,8 @@ export default {
         this.dialogFormVisibleEditPassword = true;
       } else if (command == "changMySelf") {
         this.dialogFormVisibleMySelf = true;
+        //  this.$refs.formEdit.resetFields();
+        this.formUser = JSON.parse(JSON.stringify(this.user));
       }
     },
     // 侧边栏折叠
@@ -260,6 +272,10 @@ export default {
         }
       }
       this.fullscreen = !this.fullscreen;
+    },
+    editPasswordCancel() {
+      this.dialogFormVisibleEditPassword = false;
+      this.$refs.formEdit.resetFields();
     },
     //修改密码
     editPassword() {
@@ -329,7 +345,10 @@ export default {
       }
       return isLt2M;
     },
-
+    editCancel() {
+      this.$refs.formUser.resetFields();
+      this.dialogFormVisibleMySelf = false
+    },
     //修改用户信息
     async editUser() {
       this.$refs.formUser.validate(async valid => {

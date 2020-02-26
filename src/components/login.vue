@@ -74,11 +74,12 @@ export default {
         return false;
       }
       this.$message.success(msg);
-      sessionStorage.setItem("token", res.data.user.token);
+      console.log("进入",res.data)
+      window.sessionStorage.setItem("token", res.data.user.token);
+      window.sessionStorage.setItem("refreshToken", res.data.user.refreshToken);
       this.$store.commit("add_User", res.data.user);
       this.$store.commit("add_Menus", res.data.menus);
       this.$store.commit("add_Routes", res.data.routes);
-
       this.$router.push("/index");
     }
   }

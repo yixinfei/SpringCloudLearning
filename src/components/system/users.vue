@@ -120,12 +120,7 @@
     </div>
 
     <!--新增界面-->
-    <el-dialog
-      title="新增"
-      width="400px"
-      :visible.sync="addFormVisible"
-      :close-on-click-modal="false"
-    >
+    <el-dialog title="新增" width="400px" :visible.sync="addFormVisible" :before-close="addCancel">
       <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="addForm.name" auto-complete="off" placeholder="请输入姓名"></el-input>
@@ -170,18 +165,13 @@
         <br />
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addFormVisible = false">取消</el-button>
+        <el-button @click="addCancel">取消</el-button>
         <el-button type="primary" @click="addSubmit">提交</el-button>
       </div>
     </el-dialog>
 
     <!--选择角色界面-->
-    <el-dialog
-      title="角色"
-      width="400px"
-      :visible.sync="editRoleFormVisible"
-      :close-on-click-modal="false"
-    >
+    <el-dialog title="角色" width="400px" :visible.sync="editRoleFormVisible">
       <el-form :model="editRoleForm" label-width="80px" ref="editRoleForm">
         <el-form-item label="角色">
           <el-select v-model="editRoleForm.roleId" placeholder="请选择角色">
@@ -201,12 +191,7 @@
     </el-dialog>
 
     <!--修改界面-->
-    <el-dialog
-      title="修改"
-      width="400px"
-      :visible.sync="editFormVisible"
-      :close-on-click-modal="false"
-    >
+    <el-dialog title="修改" width="400px" :visible.sync="editFormVisible" :before-close="editCancel">
       <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off" placeholder="请输入姓名"></el-input>
@@ -238,7 +223,7 @@
         <br />
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="editFormVisible = false">取消</el-button>
+        <el-button @click="editCancel">取消</el-button>
         <el-button type="primary" @click="editSubmit">提交</el-button>
       </div>
     </el-dialog>
@@ -392,6 +377,9 @@ export default {
     handleAdd() {
       this.addFormVisible = true;
     },
+    addCancel() {
+      (this.addFormVisible = false), this.$refs.addForm.resetFields();
+    },
     //提交数据
     addSubmit() {
       this.$refs.addForm.validate(async valid => {
@@ -463,6 +451,9 @@ export default {
       this.editRoleForm.userId = row.id;
       this.editRoleForm.rolesList = res.data.datas;
     },
+    editCancel() {
+      (this.editFormVisible = false), this.$refs.editForm.resetFields();
+    },
     //修改角色
     async eddRoleSubmit() {
       const res = await this.$http.put(
@@ -483,18 +474,18 @@ export default {
       this.editForm = row;
       this.editFormVisible = true;
     },
-    editSubmit(){
+    editSubmit() {
       this.$refs.editForm.validate(async valid => {
         if (!valid) return false;
-        const res =await this.$http.put("users",this.editForm);
-        if(res.meta.status !== 200){
+        const res = await this.$http.put("users", this.editForm);
+        if (res.meta.status !== 200) {
           this.$message.error(res.meta.msg);
-          return ;
+          return;
         }
         this.$refs.editForm.resetFields();
-        this.editFormVisible = false
-        this.getUserList()
-      })
+        this.editFormVisible = false;
+        this.getUserList();
+      });
     }
   }
 };
