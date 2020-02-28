@@ -91,14 +91,20 @@
             <el-table-column fixed="right" label="操作" width="250">
               <template slot-scope="scope">
                 <el-button
-                  type="primary"
+                  type="warning"
                   plain
                   size="small"
                   @click="handleRole(scope.$index,scope.row)"
                 >角色</el-button>
-                <el-button size="small" @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
+                <el-button
+                  type="primary"
+                  plain
+                  size="small"
+                  @click="handleEdit(scope.$index,scope.row)"
+                >编辑</el-button>
                 <el-button
                   type="danger"
+                  plain
                   size="small"
                   @click="resetPassword(scope.$index,scope.row)"
                 >重置密码</el-button>
@@ -113,7 +119,7 @@
             :page-sizes="[10, 20, 50, 100]"
             :page-size="queryinfo.pagesize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
+            :total="totalpage"
           ></el-pagination>
         </template>
       </div>
@@ -250,11 +256,10 @@ export default {
         pagenum: 1,
         pagesize: 10
       },
-      total: 0,
+      totalpage: 0,
       tableData: [],
       //批量选中data
       selectList: [],
-      aa: "true",
       deleteListId: [],
       //新增页面
       addFormVisible: false,
@@ -336,7 +341,7 @@ export default {
         return this.$message.error(res.meta.msg);
       }
       this.tableData = res.data.datas;
-      this.total = res.data.totalpage;
+      this.totalpage = res.data.totalpage;
       this.pagenum = res.data.pagenum;
     },
     //改变显示条数
@@ -471,7 +476,7 @@ export default {
 
     //打开修改用户
     handleEdit(index, row) {
-      this.editForm = row;
+      this.editForm = JSON.parse(JSON.stringify(row));
       this.editFormVisible = true;
     },
     editSubmit() {

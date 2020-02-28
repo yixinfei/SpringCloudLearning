@@ -63,7 +63,7 @@ axios.interceptors.request.use(
         }
         // 手动为 axios 的请求，追加 token 请求头
         if (null !== window.sessionStorage.getItem('token')) {
-                config.headers.token = window.sessionStorage.getItem('token')
+            config.headers.token = window.sessionStorage.getItem('token')
         }
         console.log("config", config)
         return config;
@@ -96,10 +96,11 @@ let instance = axios.create({
 
 // 是否正在刷新的标记
 let isRefreshing = false
-
-
+// 重试队列，每一项将是一个待执行的函数形式
+let requests = []
 //响应拦截器
 axios.interceptors.response.use(response1 => {
+
     if (response1.data.meta.status === 401) {
         const config = response1.config
         if (!isRefreshing) {
@@ -111,6 +112,8 @@ axios.interceptors.response.use(response1 => {
                 }
                 window.sessionStorage.setItem("token", token)
                 window.sessionStorage.setItem("refreshToken", refreshToken)
+                requests.forEach(cb => cb(token))
+                requests = []
                 return new Promise((resolve) => {
                     config.headers['token'] = token
                     resolve(instance(config))
@@ -123,8 +126,10 @@ axios.interceptors.response.use(response1 => {
             })
         } else {
             return new Promise((resolve) => {
-                config.headers['token'] = window.sessionStorage.getItem("token")
-                resolve(instance(config))
+                requests.push((token) => {
+                    config.headers['token'] = token
+                    resolve(instance(config))
+                })
             }).then(res =>
                 res.data)
         }
