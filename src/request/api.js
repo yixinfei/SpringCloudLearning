@@ -30,6 +30,19 @@ axios.defaults.timeout = 10000;
 // 请求拦截器
 axios.interceptors.request.use(
     config => {
+        if (config.method.toLocaleUpperCase() === 'GET') {
+            for (var key4 in config.params) {
+                //如果有文件的处理
+                if (config.params[key4] instanceof Array) {
+                    let formdata = new URLSearchParams();
+                    for (var key3 in config.params) {
+                        formdata.append(key3, config.params[key3]);
+                    }
+                    config.params = formdata;
+                    break;
+                }
+            }
+        }
         if (
             config.method.toLocaleUpperCase() === 'POST' ||
             config.method.toLocaleUpperCase() === 'PUT' ||
