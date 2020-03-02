@@ -524,6 +524,7 @@ export default {
         this.getTreeMenusListAll();
         this.getMenuList();
         this.addForm.req = "get";
+        this.addForm.pidTitle ='';
       });
     },
     //删除
