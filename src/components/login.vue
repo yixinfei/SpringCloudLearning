@@ -80,6 +80,7 @@ export default {
       this.$store.commit("add_User", res.data.user);
       this.$store.commit("add_Menus", res.data.menus);
       this.$store.commit("add_Routes", res.data.routes);
+      this.$store.commit("add_Roles", res.data.roles);
       this.$router.push("/index");
     }
   }

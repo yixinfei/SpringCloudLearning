@@ -78,7 +78,7 @@
                   <el-table-column prop="title" label="菜单名称"></el-table-column>
                   <el-table-column prop="pidTitle" label="上级菜单名称"></el-table-column>
                   <el-table-column prop="isMenu" label="是否是菜单" :formatter="formatIsMenu"></el-table-column>
-                   <el-table-column prop="levels" label="层级"></el-table-column>
+                  <el-table-column prop="levels" label="层级"></el-table-column>
                   <el-table-column prop="sort" label="排序"></el-table-column>
                   <el-table-column prop="index" label="请求地址"></el-table-column>
                   <el-table-column prop="req" label="请求方式"></el-table-column>
@@ -129,7 +129,7 @@
             placeholder="菜单为单路径（menus），权限可多路径（menus/id)"
           ></el-input>
         </el-form-item>
-         <el-form-item label="是否是菜单" prop="isMenu">
+        <el-form-item label="是否是菜单" prop="isMenu">
           <el-radio-group v-model="addForm.isMenu">
             <el-radio label="1">是</el-radio>
             <el-radio label="0">否</el-radio>
@@ -206,7 +206,7 @@
             placeholder="菜单为单路径（menus），权限可多路径（menus/id)"
           ></el-input>
         </el-form-item>
-         <el-form-item label="是否是菜单" prop="isMenu">
+        <el-form-item label="是否是菜单" prop="isMenu">
           <el-radio-group v-model="editForm.isMenu">
             <el-radio label="1">是</el-radio>
             <el-radio label="0">否</el-radio>
@@ -310,15 +310,15 @@ export default {
       }
       callback();
     };
-    var validatePid=(rule, value, callback) => {
+    var validatePid = (rule, value, callback) => {
       if (rule.isMenu == "0") {
         if (rule.levels !== 2) {
           callback(new Error("是权限请选择第二层菜单"));
         }
-      }else if (rule.isMenu == "1") {
-          if (rule.levels !== 0 || rule.levels !== 1) {
+      } else if (rule.isMenu == "1") {
+        if (rule.levels !== 0 || rule.levels !== 1) {
           callback(new Error("是菜单请选择顶层和一级菜单"));
-          }
+        }
       }
       callback();
     };
@@ -444,6 +444,7 @@ export default {
     },
     //菜单列表
     async getMenuList() {
+      if (this.$store.getters.getRole("menus", "get")) return;
       const res = await this.$http.get("menus", { params: this.queryinfo });
       if (res.meta.status !== 200) {
         this.$message.error(res.meta.msg);
@@ -471,6 +472,7 @@ export default {
 
     //新增
     handleAdd() {
+      if (this.$store.getters.getRole("menus", "post")) return;
       this.addFormVisible = true;
     },
     addCancel() {
@@ -524,11 +526,12 @@ export default {
         this.getTreeMenusListAll();
         this.getMenuList();
         this.addForm.req = "get";
-        this.addForm.pidTitle ='';
+        this.addForm.pidTitle = "";
       });
     },
     //删除
     async handleDelete(index, row) {
+      if (this.$store.getters.getRole("menus", "delete")) return;
       this.$confirm("确认删除吗？", "提示", {})
         .then(async () => {
           const res = await this.$http.delete(`menus/${row.id}`);
@@ -543,6 +546,7 @@ export default {
         .catch(() => {});
     },
     handleEdit(index, row) {
+      if (this.$store.getters.getRole("menus", "put")) return;
       this.editFormVisible = true;
       if (row.pid == "0") {
         row.pidTitle = TOPMENU;

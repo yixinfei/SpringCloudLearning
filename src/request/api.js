@@ -2,8 +2,6 @@
 import Vue from 'vue'
 import axios from 'axios'; // 引入axios
 import Qs from 'qs'; // 引入qs模块，用来序列化post类型的数据，后面会提到
-import { Message } from 'element-ui';
-import Router from 'vue-router'
 
 const devlUrl = 'http://localhost/';
 const testUrl = 'https://www.baidu.com';

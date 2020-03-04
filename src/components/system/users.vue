@@ -334,6 +334,7 @@ export default {
   methods: {
     //获取数据
     async getUserList() {
+      if (this.$store.getters.getRole("users", "get")) return;
       const res = await this.$http.get("users", {
         params: this.queryinfo
       });
@@ -361,6 +362,8 @@ export default {
     },
     //修改用户状态
     async userStatus(index, data) {
+      if (this.$store.getters.getRole("users/{id}/state/{state}", "put"))
+        return;
       const res = await this.$http.put(`users/${data.id}/state/${data.status}`);
       console.log(res);
       const {
@@ -380,6 +383,7 @@ export default {
     },
     //打开添加数据
     handleAdd() {
+      if (this.$store.getters.getRole("users", "post")) return;
       this.addFormVisible = true;
     },
     addCancel() {
@@ -391,7 +395,7 @@ export default {
         if (!valid) {
           return false;
         }
-        this.addForm.password = encrypt(this.addForm.password);
+        this.addForm.password = encrypt(this.addForm.oldPassword);
         //获取参数
         const res = await this.$http.post("users", this.addForm);
         if (res.meta.status !== 201) {
@@ -408,6 +412,7 @@ export default {
     },
     //删除数据
     handleDeleteList() {
+      if (this.$store.getters.getRole("users", "delete")) return;
       if (this.deleteListId.length == 0) {
         this.$message.error("请选择要删除的数据");
         return;
@@ -429,6 +434,8 @@ export default {
     },
     //重置密码
     resetPassword(index, row) {
+      if (this.$store.getters.getRole("users/{id}/password", "put")) return;
+
       this.$confirm("是否密码重置为123456？", "提示", {})
         .then(async () => {
           const res = await this.$http.put(`users/${row.id}/password`, {
@@ -445,6 +452,8 @@ export default {
     },
     //打开角色
     async handleRole(index, row) {
+      if (this.$store.getters.getRole("users/{id}/role/{roleId}", "put")) return;
+
       console.log("谁", row);
       this.editRoleFormVisible = true;
       const res = await this.$http.get("roles/list");
@@ -476,6 +485,8 @@ export default {
 
     //打开修改用户
     handleEdit(index, row) {
+      if (this.$store.getters.getRole("users", "put")) return;
+
       this.editForm = JSON.parse(JSON.stringify(row));
       this.editFormVisible = true;
     },

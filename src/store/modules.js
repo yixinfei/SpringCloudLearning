@@ -1,10 +1,10 @@
 import addUser_store from './components/addUsers'
 import addMenues_store from './components/addMenus.js'
 import addRoutes_store from './components/addRoutes.js'
-//import addPermission from './components/addPermission.js'
+import addRoles_store from './components/addRoles.js'
 export default {
-  menu: addUser_store,
-  user: addMenues_store,
+  user: addUser_store,
+  menu: addMenues_store,
   route: addRoutes_store,
-  //  permission:addPermission,
+  role: addRoles_store,
 }

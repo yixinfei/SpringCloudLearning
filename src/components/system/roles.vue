@@ -218,8 +218,8 @@ export default {
         children: "subs",
         label: "title"
       },
-      roleId:'',
-      selectedTreeList:[]
+      roleId: "",
+      selectedTreeList: []
     };
   },
   computed: {},
@@ -229,6 +229,8 @@ export default {
   methods: {
     //获取数据
     async getRoleList() {
+      if (this.$store.getters.getRole("roles", "get")) return;
+
       const res = await this.$http.get("roles", {
         params: this.queryinfo
       });
@@ -257,6 +259,8 @@ export default {
     },
     //打开添加数据
     handleAdd() {
+      if (this.$store.getters.getRole("roles", "post")) return;
+
       this.addFormVisible = true;
     },
     addCancel() {
@@ -284,6 +288,8 @@ export default {
     },
     //删除数据
     handleDeleteList() {
+      if (this.$store.getters.getRole("roles", "delete")) return;
+
       if (this.deleteListId.length == 0) {
         this.$message.error("请选择要删除的数据");
         return;
@@ -306,6 +312,8 @@ export default {
 
     //打开修改用户
     handleEdit(index, row) {
+      if (this.$store.getters.getRole("roles", "put")) return;
+
       this.editForm = JSON.parse(JSON.stringify(row));
       this.editFormVisible = true;
     },
@@ -327,8 +335,10 @@ export default {
       });
     },
     //配置权限打开
-    handleRole(index,row) {
-      this.roleId =row.id
+    handleRole(index, row) {
+      if (this.$store.getters.getRole("roles/{id}", "post")) return;
+
+      this.roleId = row.id;
       this.editRoleVisible = true;
       this.getTreeMenusListAll();
     },
@@ -336,7 +346,6 @@ export default {
       this.editRoleVisible = false;
     },
     async getTreeMenusListAll() {
-      
       const res = await this.$http.get(`menus/treeListAll/${this.roleId}`);
       console.log(res);
       if (res.meta.status !== 200) {
@@ -348,18 +357,18 @@ export default {
     async roleSubmit() {
       let keys = this.$refs.tree.getCheckedKeys();
       if (keys.length === 0) {
-        this.$message.error("请选择")
-        return
+        this.$message.error("请选择");
+        return;
       }
-      keys =keys.concat(this.$refs.tree.getHalfCheckedKeys());
-      const res = await this.$http.post(`roles/${this.roleId}`,{ids:keys})
-      if(res.meta.status !== 200){
-        this.$message.error(res.meta.msg)
-        return
+      keys = keys.concat(this.$refs.tree.getHalfCheckedKeys());
+      const res = await this.$http.post(`roles/${this.roleId}`, { ids: keys });
+      if (res.meta.status !== 200) {
+        this.$message.error(res.meta.msg);
+        return;
       }
-      this.$message.success(res.meta.msg)
-      this.editRoleVisible = false
-      this.getRoleList()
+      this.$message.success(res.meta.msg);
+      this.editRoleVisible = false;
+      this.getRoleList();
     }
   }
 };

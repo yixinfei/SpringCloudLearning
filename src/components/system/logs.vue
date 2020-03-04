@@ -37,7 +37,7 @@
               </el-form-item>
               <el-form-item>
                 日志类型：
-                <el-select size='mini' clearable v-model="queryinfo.type" placeholder="请选择">
+                <el-select size="mini" clearable v-model="queryinfo.type" placeholder="请选择">
                   <el-option label="操作日志" value="0"></el-option>
                   <el-option label="错误日志" value="1"></el-option>
                 </el-select>
@@ -120,7 +120,7 @@ export default {
         pagesize: 10,
         name: "",
         starStopTime: "",
-        type:''
+        type: ""
       },
       totalpage: 0,
       tableData: [],
@@ -192,7 +192,7 @@ export default {
     },
 
     async getLogList() {
-      console.log(this.queryinfo);
+      if (this.$store.getters.getRole("logs", "get")) return;
       const res = await this.$http.get("logs", { params: this.queryinfo });
       if (res.meta.status !== 200) {
         this.$message.error(res.meta.msg);
@@ -204,6 +204,7 @@ export default {
       this.queryinfo.pagenum = res.data.pagenum;
     },
     async deleteLog() {
+      if (this.$store.getters.getRole("logs", "delete")) return;
       this.$confirm("确认删除全部日志吗？", "提示", {})
         .then(async () => {
           const res = await this.$http.delete("logs");
