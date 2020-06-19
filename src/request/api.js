@@ -3,9 +3,9 @@ import Vue from 'vue'
 import axios from 'axios'; // 引入axios
 import Qs from 'qs'; // 引入qs模块，用来序列化post类型的数据，后面会提到
 
-const devlUrl = 'http://localhost/';
-const testUrl = 'https://www.baidu.com';
-const localUrl = 'https://www.baidu.com';
+const devlUrl = 'http://localhost:8078/';
+const testUrl = 'http://localhost:8078/';
+const localUrl = 'http://localhost:8078/';
 
 // 环境的切换
 if (process.env.NODE_ENV == 'production') {

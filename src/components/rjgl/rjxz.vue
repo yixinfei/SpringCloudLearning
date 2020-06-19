@@ -10,10 +10,10 @@
           <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
             <el-form :inline="true" :model="queryinfo">
               <el-form-item>
-                角色名称：
+                软件名称：
                 <el-input
-                  v-model="queryinfo.name"
-                  placeholder="请输入角色名称"
+                  v-model="queryinfo.mc"
+                  placeholder="请输入软件名称"
                   style="width:200px; heght:30px;"
                   size="mini"
                   clearable
@@ -23,7 +23,7 @@
                 <el-button
                   type="primary"
                   icon="el-icon-search"
-                  @click="getRoleList()"
+                  @click="getRjxzList()"
                   size="mini"
                 >搜索</el-button>
               </el-form-item>
@@ -61,8 +61,10 @@
             <el-table-column type="selection" width="40"></el-table-column>
             <!--索引-->
             <el-table-column type="index" label="序号"></el-table-column>
-            <el-table-column prop="name" label="角色名称"></el-table-column>
-            <el-table-column prop="describes" label="描述"></el-table-column>
+            <el-table-column prop="mc" label="软件名称"></el-table-column>
+            <el-table-column prop="lj" label="软件路径"></el-table-column>
+            <el-table-column prop="wjdx" label="软件大小"></el-table-column>
+            <el-table-column prop="xq" label="软件描述"></el-table-column>
             <el-table-column fixed="right" label="操作" width="250">
               <template slot-scope="scope">
                 <el-button
@@ -71,12 +73,6 @@
                   size="small"
                   @click="handleEdit(scope.$index,scope.row)"
                 >编辑</el-button>
-                <el-button
-                  type="warning"
-                  plain
-                  size="small"
-                  @click="handleRole(scope.$index,scope.row)"
-                >配置权限</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -97,12 +93,32 @@
     <!--新增界面-->
     <el-dialog title="新增" width="400px" :visible.sync="addFormVisible" :before-close="addCancel">
       <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-        <el-form-item label="角色名称" prop="name">
-          <el-input v-model="addForm.name" auto-complete="off" placeholder="请输入角色名称"></el-input>
+        <el-form-item label="软件名称" prop="name">
+          <el-input v-model="addForm.mc" auto-complete="off" placeholder="请输入软件名称"></el-input>
         </el-form-item>
         <br />
         <el-form-item label="描述" prop="describes">
-          <el-input v-model="addForm.describes" auto-complete="off" placeholder="请输入描述"></el-input>
+          <el-input v-model="addForm.xq" auto-complete="off" placeholder="请输入描述"></el-input>
+        </el-form-item>
+        <br />
+        <el-form-item label="描述" prop="describes">
+          <el-upload
+            class="upload-demo"
+            ref="upload"
+            action="#"
+            :http-request="addSubmit"
+            :before-upload="beforeUpload"
+            :on-change="handleChange"
+            :auto-upload="false"
+            :limit="1"
+            :on-exceed="handleExceed"
+          >
+            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+            
+          </el-upload>
+          <div v-show="progressFlag" class="head-img">
+              <el-progress  :percentage="progressPercent"></el-progress>
+            </div>
         </el-form-item>
         <br />
       </el-form>
@@ -115,43 +131,18 @@
     <!--修改界面-->
     <el-dialog title="修改" width="400px" :visible.sync="editFormVisible" :before-close="editCancel">
       <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-        <el-form-item label="角色名称" prop="name">
-          <el-input v-model="editForm.name" auto-complete="off" placeholder="请输入角色名称"></el-input>
+        <el-form-item label="软件名称" prop="mc">
+          <el-input v-model="editForm.mc" auto-complete="off" placeholder="请输入软件名称"></el-input>
         </el-form-item>
         <br />
-        <el-form-item label="描述" prop="describes">
-          <el-input v-model="editForm.describes" auto-complete="off" placeholder="请输入角色名称"></el-input>
+        <el-form-item label="描述" prop="xq">
+          <el-input v-model="editForm.xq" auto-complete="off" placeholder="请输入软件描述"></el-input>
         </el-form-item>
         <br />
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editCancel">取消</el-button>
         <el-button type="primary" @click="editSubmit">提交</el-button>
-      </div>
-    </el-dialog>
-
-    <!--配置权限-->
-    <el-dialog
-      title="配置权限"
-      width="400px"
-      :visible.sync="editRoleVisible"
-      :before-close="editRoleCancel"
-    >
-      <el-tree
-        :data="treeMenusListAll"
-        show-checkbox
-        node-key="id"
-        :default-checked-keys="selectedTreeList"
-        :expand-on-click-node="false"
-        default-expand-all
-        :props="defaultProps"
-        highlight-current
-        check-on-click-node
-        ref="tree"
-      ></el-tree>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="editRoleCancel">取消</el-button>
-        <el-button type="primary" @click="roleSubmit">提交</el-button>
       </div>
     </el-dialog>
   </section>
@@ -163,7 +154,7 @@ export default {
     return {
       //请求参数
       queryinfo: {
-        name: "",
+        mc: "",
         pagenum: 1,
         pagesize: 10
       },
@@ -175,20 +166,24 @@ export default {
       //新增页面
       addFormVisible: false,
       addForm: {
-        name: "",
-        describes: ""
+        mc: "",
+        xq: ""
       },
+      file: "",
+      fileList: [],
+      progressFlag:"",
+      progressPercent: 0,
       addFormRules: {
-        name: [
-          { required: true, message: "请输入角色名称", trigger: "blur" },
+        mc: [
+          { required: true, message: "请输入软件名称", trigger: "blur" },
           {
             min: 1,
             max: 5,
-            message: "角色名称在1-10个字符之间",
+            message: "软件名称在1-10个字符之间",
             trigger: "blur"
           }
         ],
-        describes: [
+        xq: [
           { min: 1, max: 10, message: "描述在1-100个字符之间", trigger: "blur" }
         ]
       },
@@ -196,42 +191,30 @@ export default {
       editFormVisible: false,
       editForm: {},
       editFormRules: {
-        name: [
-          { required: true, message: "请输入角色名称", trigger: "blur" },
+        mc: [
+          { required: true, message: "请输入软件名称", trigger: "blur" },
           {
             min: 1,
             max: 5,
-            message: "角色名称在1-10个字符之间",
+            message: "软件名称在1-10个字符之间",
             trigger: "blur"
           }
         ],
-        describes: [
+        xq: [
           { min: 1, max: 10, message: "描述在1-100个字符之间", trigger: "blur" }
         ]
-      },
-      //配置权限
-      editRoleVisible: false,
-      editRole: {},
-      //权限列表数据
-      treeMenusListAll: [],
-      defaultProps: {
-        children: "subs",
-        label: "title"
-      },
-      roleId: "",
-      selectedTreeList: []
+      }
     };
   },
   computed: {},
   mounted() {
-    this.getRoleList();
+    this.getRjxzList();
   },
   methods: {
     //获取数据
-    async getRoleList() {
-      if (this.$store.getters.getRole("roles", "get")) return;
-
-      const res = await this.$http.get("roles", {
+    async getRjxzList() {
+      //  if (this.$store.getters.getRole("rjgl", "get")) return;
+      const res = await this.$http.get("rjgl", {
         params: this.queryinfo
       });
       if (res.meta.status !== 200) {
@@ -245,12 +228,12 @@ export default {
     handleSizeChange(val) {
       this.queryinfo.pagesize = val;
       this.queryinfo.pagenum = 1;
-      this.getRoleList();
+      this.getRjxzList();
     },
     //页数跳转
     handleCurrentChange(val) {
       this.queryinfo.pagenum = val;
-      this.getRoleList();
+      this.getRjxzList();
     },
     handleSelectionChange(val) {
       this.deleteListId = val.map(item => {
@@ -259,36 +242,66 @@ export default {
     },
     //打开添加数据
     handleAdd() {
-      if (this.$store.getters.getRole("roles", "post")) return;
+      //if (this.$store.getters.getRole("roles", "post")) return;
 
       this.addFormVisible = true;
     },
     addCancel() {
       (this.addFormVisible = false), this.$refs.addForm.resetFields();
     },
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 1 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
+      );
+    },
+    handleChange(file) {
+      this.file = file.raw;
+    },
+    beforeUpload(f) {
+      console.log("h1ehe", f);
+    },
     //提交数据
     addSubmit() {
-      this.$refs.addForm.validate(async valid => {
-        if (!valid) {
-          return false;
+      console.log("hehe", this.file);
+      this.progressFlag = true;
+      this.$http({
+        url: "/rjgl",
+        method: "post",
+        data: { rj: this.file, mc: this.addForm.mc, xq: this.addForm.xq },
+        onUploadProgress: progressEvent => {
+          // progressEvent.loaded:已上传文件大小
+          // progressEvent.total:被上传文件的总大小
+          this.progressPercent =
+            parseInt((progressEvent.loaded / progressEvent.total) * 100);
         }
-        //获取参数
-        const res = await this.$http.post("roles", this.addForm);
-        if (res.meta.status !== 201) {
-          this.$message.error(res.meta.msg);
-          return;
-        }
-        this.$message.success(res.meta.msg);
-        //重置信息
-        this.$refs.addForm.resetFields();
-        this.addFormVisible = false;
-        this.addForm = {};
-        this.getRoleList();
-      });
+      })
+        .then(res => {
+          console.log(res);
+          if (res.meta.status !== 200) {
+            this.$message.error(res.meta.msg);
+            return;
+          }
+          this.$message.success(res.meta.msg);
+          this.addForm ={}
+          this.addFormVisible = false
+          this.file =""
+          this.fileList =[]
+          if (this.progressPercent === 100) {
+            this.progressFlag = false;
+            this.progressPercent = 0;
+          }
+          this.getRjxzList()
+          this.$refs.upload.clearFiles()
+        })
+        .then(error => {
+          console.log(error);
+        });
     },
     //删除数据
     handleDeleteList() {
-      if (this.$store.getters.getRole("roles", "delete")) return;
+    //  if (this.$store.getters.getRole("roles", "delete")) return;
 
       if (this.deleteListId.length == 0) {
         this.$message.error("请选择要删除的数据");
@@ -296,7 +309,7 @@ export default {
       }
       this.$confirm("确认删除吗？", "提示", {})
         .then(async () => {
-          const res = await this.$http.delete("roles", {
+          const res = await this.$http.delete("rjgl", {
             data: { ids: this.deleteListId }
           });
           console.log(res);
@@ -305,16 +318,17 @@ export default {
             return;
           }
           this.$message.success(res.meta.msg);
-          this.getRoleList();
+          this.getRjxzList();
         })
         .catch(() => {});
     },
 
     //打开修改用户
     handleEdit(index, row) {
-      if (this.$store.getters.getRole("roles", "put")) return;
+     // if (this.$store.getters.getRole("roles", "put")) return;
 
       this.editForm = JSON.parse(JSON.stringify(row));
+      console.log(this.editForm)
       this.editFormVisible = true;
     },
     editCancel() {
@@ -324,52 +338,19 @@ export default {
     editSubmit() {
       this.$refs.editForm.validate(async valid => {
         if (!valid) return false;
-        const res = await this.$http.put("roles", this.editForm);
+        const res = await this.$http.put("rjgl", this.editForm);
         if (res.meta.status !== 200) {
           this.$message.error(res.meta.msg);
           return;
         }
         this.$refs.editForm.resetFields();
         this.editFormVisible = false;
-        this.getRoleList();
+        this.getRjxzList();
       });
-    },
-    //配置权限打开
-    handleRole(index, row) {
-      if (this.$store.getters.getRole("roles/{id}", "post")) return;
-
-      this.roleId = row.id;
-      this.editRoleVisible = true;
-      this.getTreeMenusListAll();
     },
     editRoleCancel() {
       this.editRoleVisible = false;
     },
-    async getTreeMenusListAll() {
-      const res = await this.$http.get(`menus/treeListAll/${this.roleId}`);
-      console.log(res);
-      if (res.meta.status !== 200) {
-        this.$message.error(res.meta.msg);
-      }
-      this.treeMenusListAll = res.data.datas;
-      this.selectedTreeList = res.data.selectedMenu;
-    },
-    async roleSubmit() {
-      let keys = this.$refs.tree.getCheckedKeys();
-      if (keys.length === 0) {
-        this.$message.error("请选择");
-        return;
-      }
-      keys = keys.concat(this.$refs.tree.getHalfCheckedKeys());
-      const res = await this.$http.post(`roles/${this.roleId}`, { ids: keys });
-      if (res.meta.status !== 200) {
-        this.$message.error(res.meta.msg);
-        return;
-      }
-      this.$message.success(res.meta.msg);
-      this.editRoleVisible = false;
-      this.getRoleList();
-    }
   }
 };
 </script>

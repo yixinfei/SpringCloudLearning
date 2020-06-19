@@ -100,6 +100,7 @@
                 class="img-btn"
                 action="#"
                 :http-request="uploadImg"
+                
               >
                 <el-avatar v-if="!progressFlag" class="head-img" :size="100" :src="imgSrc"></el-avatar>
                 <div v-show="progressFlag" class="head-img">

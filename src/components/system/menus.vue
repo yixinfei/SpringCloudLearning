@@ -474,6 +474,8 @@ export default {
     handleAdd() {
       if (this.$store.getters.getRole("menus", "post")) return;
       this.addFormVisible = true;
+      //默认给个图标
+      this.addForm.icon = 'el-icon-link'
     },
     addCancel() {
       this.addForm = { isMenu: "1", req: "get" };

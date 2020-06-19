@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/components/common/bus.js"],"names":["bus","Vue"],"mappings":"kHAAA,uBAGMA,EAAM,IAAIC,aAEDD","file":"js/chunk-2d0e28d4.88b0a303.js","sourcesContent":["import Vue from 'vue';\n\n// 使用 Event Bus\nconst bus = new Vue();\n\nexport default bus;"],"sourceRoot":""}
