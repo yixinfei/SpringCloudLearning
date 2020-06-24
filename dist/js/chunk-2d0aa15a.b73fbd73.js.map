@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack:///./src/components/rjgl/rw.jpg"],"names":["module","exports"],"mappings":"mGAAAA,EAAOC,QAAU,IAA0B","file":"js/chunk-2d0aa15a.b73fbd73.js","sourcesContent":["module.exports = __webpack_public_path__ + \"img/rw.c7ca896c.jpg\";"],"sourceRoot":""}
