@@ -10,11 +10,8 @@ const addRole = {
       return state.role;
     },
     getRole: (state) => (index,req) => {
-      console.log(index,req)
       const isHave =state.role.find(role => role.req === req && role.index ===index )
-      console.log("呵呵",isHave)
       const ret = isHave ===undefined?true:false
-      console.log(ret)
       if(ret) Message.error("无相关权限")
       return ret
     }

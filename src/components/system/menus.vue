@@ -29,7 +29,6 @@
                         v-model="queryinfo.title"
                         placeholder="请输入菜单名称"
                         style="width:200px; heght:30px;"
-                        size="mini"
                         clearable
                       ></el-input>
                     </el-form-item>
@@ -39,17 +38,11 @@
                         v-model="queryinfo.levels"
                         placeholder="请输入菜单层级"
                         style="width:200px; heght:30px;"
-                        size="mini"
                         clearable
                       ></el-input>
                     </el-form-item>
                     <el-form-item>
-                      <el-button
-                        type="primary"
-                        icon="el-icon-search"
-                        @click="getMenuList()"
-                        size="mini"
-                      >搜索</el-button>
+                      <el-button type="primary" icon="el-icon-search" @click="getMenuList()">搜索</el-button>
                     </el-form-item>
                   </el-form>
                 </el-col>
@@ -59,22 +52,20 @@
                 type="success"
                 icon="el-icon-circle-plus-outline"
                 @click="handleAdd"
-                size="mini"
                 round
               >新增</el-button>
-
               <template>
                 <!--表格数据及操作-->
                 <el-table
                   ref="multipleTable"
                   :data="tableData"
-                  size="mini"
                   highlight-current-row
                   border
                   class="el-tb-edit mgt20"
+                  :max-height="table.maxHeight"
                 >
                   <!--索引-->
-                  <el-table-column type="index" label="序号" sortable></el-table-column>
+                  <el-table-column type="index" label="" sortable></el-table-column>
                   <el-table-column prop="title" label="菜单名称"></el-table-column>
                   <el-table-column prop="pidTitle" label="上级菜单名称"></el-table-column>
                   <el-table-column prop="isMenu" label="是否是菜单" :formatter="formatIsMenu"></el-table-column>
@@ -338,6 +329,10 @@ export default {
         pagenum: 1,
         pagesize: 10
       },
+      table: {
+        maxHeight: 0
+      },
+
       totalpage: 0,
       tableData: [],
       //批量选中data
@@ -454,6 +449,7 @@ export default {
       this.tableData = res.data.datas;
       this.totalpage = res.data.totalpage;
       this.queryinfo.pagenum = res.data.pagenum;
+      this.table = this.$store.getters.table;
     },
     //改变显示条数
     handleSizeChange(val) {
@@ -475,7 +471,7 @@ export default {
       if (this.$store.getters.getRole("menus", "post")) return;
       this.addFormVisible = true;
       //默认给个图标
-      this.addForm.icon = 'el-icon-link'
+      this.addForm.icon = "el-icon-link";
     },
     addCancel() {
       this.addForm = { isMenu: "1", req: "get" };

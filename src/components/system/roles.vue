@@ -15,36 +15,18 @@
                   v-model="queryinfo.name"
                   placeholder="请输入角色名称"
                   style="width:200px; heght:30px;"
-                  size="mini"
                   clearable
                 ></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button
-                  type="primary"
-                  icon="el-icon-search"
-                  @click="getRoleList()"
-                  size="mini"
-                >搜索</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="getRoleList()">搜索</el-button>
               </el-form-item>
             </el-form>
           </el-col>
         </div>
         <!-- 搜索区end -->
-        <el-button
-          type="success"
-          icon="el-icon-circle-plus-outline"
-          @click="handleAdd"
-          size="mini"
-          round
-        >新增</el-button>
-        <el-button
-          type="danger"
-          icon="el-icon-delete"
-          @click="handleDeleteList"
-          size="mini"
-          round
-        >删除</el-button>
+        <el-button type="success" icon="el-icon-circle-plus-outline" @click="handleAdd" round>新增</el-button>
+        <el-button type="danger" icon="el-icon-delete" @click="handleDeleteList" round>删除</el-button>
 
         <template>
           <!--表格数据及操作-->
@@ -52,15 +34,15 @@
             ref="multipleTable"
             @selection-change="handleSelectionChange"
             :data="tableData"
-            size="mini"
             highlight-current-row
             border
             class="el-tb-edit mgt20"
+            :max-height="table.maxHeight"
           >
             <!--勾选框-->
             <el-table-column type="selection" width="40"></el-table-column>
             <!--索引-->
-            <el-table-column type="index" label="序号"></el-table-column>
+            <el-table-column type="index" label=""></el-table-column>
             <el-table-column prop="name" label="角色名称"></el-table-column>
             <el-table-column prop="describes" label="描述"></el-table-column>
             <el-table-column fixed="right" label="操作" width="250">
@@ -167,6 +149,10 @@ export default {
         pagenum: 1,
         pagesize: 10
       },
+      table: {
+        maxHeight: 0
+      },
+
       totalpage: 0,
       tableData: [],
       //批量选中data
@@ -240,6 +226,7 @@ export default {
       this.tableData = res.data.datas;
       this.totalpage = res.data.totalpage;
       this.pagenum = res.data.pagenum;
+      this.table = this.$store.getters.table;
     },
     //改变显示条数
     handleSizeChange(val) {

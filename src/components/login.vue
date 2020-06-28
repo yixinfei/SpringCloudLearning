@@ -31,7 +31,7 @@ export default {
       formLogin: {
         //表单对象
         account: "admin",
-        password: "1234"
+        password: "123456"
       },
       errorInfo: {
         text: "登陆失败,请重试",
@@ -64,7 +64,6 @@ export default {
         account: this.formLogin.account,
         password: password
       });
-      console.log("hhe:", res);
       const {
         meta: { status, msg },
       } = res;
@@ -74,7 +73,6 @@ export default {
         return false;
       }
       this.$message.success(msg);
-      console.log("进入",res.data)
       window.sessionStorage.setItem("token", res.data.user.token);
       window.sessionStorage.setItem("refreshToken", res.data.user.refreshToken);
       this.$store.commit("add_User", res.data.user);

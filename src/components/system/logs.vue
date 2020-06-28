@@ -2,7 +2,7 @@
   <section>
     <div class="table">
       <!-- 页面表格begin -->
-      <div class="container">
+      <div id="table" class="container">
         <!-- 页面内容区begin -->
         <div class="handle-box">
           <!-- 搜索区begin -->
@@ -15,7 +15,6 @@
                   v-model="queryinfo.name"
                   placeholder="请输入用户名"
                   style="width:200px;"
-                  size="mini"
                   clearable
                 ></el-input>
               </el-form-item>
@@ -30,23 +29,22 @@
                   range-separator="至"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
-                  size="mini"
                   format="yyyy-MM-dd"
                   :picker-options="pickerOptions"
                 ></el-date-picker>
               </el-form-item>
               <el-form-item>
                 日志类型：
-                <el-select size="mini" clearable v-model="queryinfo.type" placeholder="请选择">
+                <el-select clearable v-model="queryinfo.type" placeholder="请选择">
                   <el-option label="操作日志" value="0"></el-option>
                   <el-option label="错误日志" value="1"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" icon="el-icon-search" @click="getLogList" size="mini">搜索</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="getLogList">搜索</el-button>
               </el-form-item>
               <el-form-item>
-                <el-button type="danger" icon="el-icon-search" @click="deleteLog" size="mini">清除日志</el-button>
+                <el-button type="danger" icon="el-icon-search" @click="deleteLog">清除日志</el-button>
               </el-form-item>
             </el-form>
           </el-col>
@@ -57,13 +55,13 @@
           <el-table
             ref="multipleTable"
             :data="tableData"
-            size="mini"
             highlight-current-row
             border
             class="el-tb-edit mgt20"
+            :max-height="table.maxHeight"
           >
             <!--索引-->
-            <el-table-column type="index" label="序号"></el-table-column>
+            <el-table-column type="index" label=""></el-table-column>
             <el-table-column prop="userName" label="操作人"></el-table-column>
             <el-table-column prop="describes" label="具体操作"></el-table-column>
             <el-table-column prop="type" :formatter="formatType" label="日志类型"></el-table-column>
@@ -121,6 +119,9 @@ export default {
         name: "",
         starStopTime: "",
         type: ""
+      },
+      table: {
+        maxHeight: 0
       },
       totalpage: 0,
       tableData: [],
@@ -202,6 +203,7 @@ export default {
       this.tableData = res.data.datas;
       this.totalpage = res.data.totalpage;
       this.queryinfo.pagenum = res.data.pagenum;
+      this.table = this.$store.getters.table;
     },
     async deleteLog() {
       if (this.$store.getters.getRole("logs", "delete")) return;
