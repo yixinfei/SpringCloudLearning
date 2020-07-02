@@ -14,14 +14,18 @@ body,
 
 body {
     font-family: 'PingFang SC', "Helvetica Neue", Helvetica, "microsoft yahei", arial, STHeiTi, sans-serif;
+    
 }
 
 a {
     text-decoration: none
 }
-
+section{
+    height:95%;
+}
 .content-box {
     position: absolute;
+    height: 100%;
     left: 200px;
     right: 0;
     top: 70px;
@@ -31,7 +35,9 @@ a {
     transition: left .3s ease-in-out;
     background: #f0f0f0;
 }
-
+.table{
+    height:92%;
+}
 .content {
     width: auto;
     padding: 10px;
@@ -42,13 +48,13 @@ a {
 }
 
 .container {
+    height:100%;
     padding: 30px;
     background: #fff;
     border: 1px solid #ddd;
     /* border-radius: 5px; 
      box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04); */
 }
-
 .crumbs {
     margin-bottom: 20px;
 }

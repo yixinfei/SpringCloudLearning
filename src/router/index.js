@@ -34,11 +34,14 @@ const routerPush = Router.prototype.push
 Router.prototype.push = function push(location) {
   return routerPush.call(this, location).catch(error=> error)
 }
-
 //全局路由守卫
 router.beforeEach((to, from, next) => {
     var token = sessionStorage.getItem('token');
+   
     //如果没登录,都导向登录页
+    if (to.meta.title) {
+        document.title = to.meta.title+"｜历史档案"
+      }
     if (!token) {
         if (to.path !== '/login') {
             next('/login')

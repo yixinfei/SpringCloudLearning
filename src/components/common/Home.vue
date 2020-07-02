@@ -4,11 +4,11 @@
     <v-head></v-head>
     <!-- 侧边栏 -->
     <v-sidebar></v-sidebar>
-    <div class="content-box" :class="{'content-collapse':collapse}">
-      <div class="content_wrapper" style="overflow-y:none;">
+    <div class="content-box" :class="{'content-collapse':collapse}" >
+      <div class="content_wrapper" style="overflow-y:none;height:98%;" scroll="no">
         <v-tags></v-tags>
-        <div class="content" >
-          <div class="content_inner" style="width:100%;height:100%;overflow-y:auto;">
+        <div class="content" style="height:100%;">
+          <div class="content_inner" style="width:100%;overflow-y:auto;">
             <transition name="el-zoom-in-center"  mode="out-in">
               <keep-alive :include="tagsList">
                 <router-view></router-view>

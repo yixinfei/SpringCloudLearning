@@ -4,7 +4,7 @@
     <div class="collapse-btn" @click="collapseChage">
       <i class="el-icon-menu"></i>
     </div>
-    <div class="logo">项目管理</div>
+    <div class="logo">{{navigationName}}</div>
     <div class="header-right">
       <div class="header-user-con">
         <!-- 全屏显示 -->
@@ -180,6 +180,7 @@ export default {
       formEdit: { oldPassword: "", newPassword: "", newAgainPassword: "" },
       formEditEn: { oldPassword: "", newPassword: "" },
       formUser: {},
+     
       user: {},
       collapse: false,
       fullscreen: false,
@@ -226,7 +227,11 @@ export default {
         ? this.$http.defaults.baseURL + this.$store.getters.user.headPortrait
         : require("@/assets/image/headPortrait.jpg");
       return imgSrc;
-    }
+    },
+     navigationName(){
+       const navigationName = this.$store.getters.unit.navigationName
+        return  navigationName
+     },
   },
   methods: {
     // 用户名下拉菜单选择事件

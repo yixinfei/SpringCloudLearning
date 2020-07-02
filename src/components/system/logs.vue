@@ -3,84 +3,85 @@
     <div class="table">
       <!-- 页面表格begin -->
       <div id="table" class="container">
-        <!-- 页面内容区begin -->
-        <div class="handle-box">
-          <!-- 搜索区begin -->
-          <!--工具条-->
-          <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-            <el-form :inline="true" :model="queryinfo">
-              <el-form-item>
-                用户名：
-                <el-input
-                  v-model="queryinfo.name"
-                  placeholder="请输入用户名"
-                  style="width:200px;"
-                  clearable
-                ></el-input>
-              </el-form-item>
-              <el-form-item>
-                起止时间：
-                <el-date-picker
-                  v-model="queryinfo.starStopTime"
-                  type="daterange"
-                  align="left"
-                  unlink-panels
-                  style="width:250px; "
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  format="yyyy-MM-dd"
-                  :picker-options="pickerOptions"
-                ></el-date-picker>
-              </el-form-item>
-              <el-form-item>
-                日志类型：
-                <el-select clearable v-model="queryinfo.type" placeholder="请选择">
-                  <el-option label="操作日志" value="0"></el-option>
-                  <el-option label="错误日志" value="1"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" icon="el-icon-search" @click="getLogList">搜索</el-button>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="danger" icon="el-icon-search" @click="deleteLog">清除日志</el-button>
-              </el-form-item>
-            </el-form>
-          </el-col>
-        </div>
+        <el-row>
+          <!-- 页面内容区begin -->
+          <div class="handle-box">
+            <!-- 搜索区begin -->
+            <!--工具条-->
 
-        <template>
-          <!--表格数据及操作-->
-          <el-table
-            ref="multipleTable"
-            :data="tableData"
-            highlight-current-row
-            border
-            class="el-tb-edit mgt20"
-            :max-height="table.maxHeight"
-          >
-            <!--索引-->
-            <el-table-column type="index" label=""></el-table-column>
-            <el-table-column prop="userName" label="操作人"></el-table-column>
-            <el-table-column prop="describes" label="具体操作"></el-table-column>
-            <el-table-column prop="type" :formatter="formatType" label="日志类型"></el-table-column>
-            <el-table-column prop="errorCode" label="错误类型"></el-table-column>
-            <el-table-column prop="ip" label="ip"></el-table-column>
-            <el-table-column prop="createTime" label="时间" sortable></el-table-column>
-          </el-table>
-          <br />
+            <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+              <el-form :inline="true" :model="queryinfo">
+                <el-form-item>
+                  用户名：
+                  <el-input
+                    v-model="queryinfo.name"
+                    placeholder="请输入用户名"
+                    style="width:200px;"
+                    clearable
+                  ></el-input>
+                </el-form-item>
+                <el-form-item>
+                  起止时间：
+                  <el-date-picker
+                    v-model="queryinfo.starStopTime"
+                    type="daterange"
+                    align="left"
+                    unlink-panels
+                    style="width:250px; "
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    format="yyyy-MM-dd"
+                    :picker-options="pickerOptions"
+                  ></el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                  日志类型：
+                  <el-select clearable v-model="queryinfo.type" placeholder="请选择">
+                    <el-option label="操作日志" value="0"></el-option>
+                    <el-option label="错误日志" value="1"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" icon="el-icon-search" @click="getLogList">搜索</el-button>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="danger" icon="el-icon-search" @click="deleteLog">清除日志</el-button>
+                </el-form-item>
+              </el-form>
+            </el-col>
+          </div>
 
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="queryinfo.pagenum"
-            :page-sizes="[10, 20, 50, 100]"
-            :page-size="queryinfo.pagesize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="totalpage"
-          ></el-pagination>
-        </template>
+          <template>
+            <!--表格数据及操作-->
+            <el-table
+              ref="multipleTable"
+              :data="tableData"
+              highlight-current-row
+              border
+              class="el-tb-edit mgt10"
+              :max-height="table.maxHeight"
+            >
+              <!--索引-->
+              <el-table-column type="index" label></el-table-column>
+              <el-table-column prop="userName" label="操作人"></el-table-column>
+              <el-table-column prop="describes" label="具体操作"></el-table-column>
+              <el-table-column prop="type" :formatter="formatType" label="日志类型"></el-table-column>
+              <el-table-column prop="errorCode" label="错误类型"></el-table-column>
+              <el-table-column prop="ip" label="ip"></el-table-column>
+              <el-table-column prop="createTime" label="时间" sortable></el-table-column>
+            </el-table>
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="queryinfo.pagenum"
+              :page-sizes="[10, 20, 50, 100]"
+              :page-size="queryinfo.pagesize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="totalpage"
+            ></el-pagination>
+          </template>
+        </el-row>
       </div>
     </div>
   </section>

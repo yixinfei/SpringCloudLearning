@@ -36,7 +36,7 @@
             :data="tableData"
             highlight-current-row
             border
-            class="el-tb-edit mgt20"
+            class="el-tb-edit mgt10"
             :max-height="table.maxHeight"
           >
             <!--勾选框-->

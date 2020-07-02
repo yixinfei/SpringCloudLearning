@@ -4,14 +4,12 @@
       <!-- 页面表格begin -->
       <div class="container">
         <!-- 页面内容区begin -->
-        <div class="handle-box">
-          <el-row :gutter="20">
-            <el-col :span="4">
+          <el-row >
+            <el-col :span="4" style="height:700px;overflow-x:auto">
               <el-tree
                 :data="treeMenusListAll"
                 node-key="id"
                 :expand-on-click-node="false"
-                default-expand-all
                 :props="defaultProps"
                 @node-click="handleNodeClick"
                 highlight-current
@@ -48,12 +46,7 @@
                 </el-col>
               </div>
               <!-- 搜索区end -->
-              <el-button
-                type="success"
-                icon="el-icon-circle-plus-outline"
-                @click="handleAdd"
-                round
-              >新增</el-button>
+             
               <template>
                 <!--表格数据及操作-->
                 <el-table
@@ -61,11 +54,11 @@
                   :data="tableData"
                   highlight-current-row
                   border
-                  class="el-tb-edit mgt20"
+                  class="el-tb-edit mgt10"
                   :max-height="table.maxHeight"
                 >
                   <!--索引-->
-                  <el-table-column type="index" label="" sortable></el-table-column>
+                  <el-table-column type="index" label sortable></el-table-column>
                   <el-table-column prop="title" label="菜单名称"></el-table-column>
                   <el-table-column prop="pidTitle" label="上级菜单名称"></el-table-column>
                   <el-table-column prop="isMenu" label="是否是菜单" :formatter="formatIsMenu"></el-table-column>
@@ -91,7 +84,6 @@
                     </template>
                   </el-table-column>
                 </el-table>
-                <br />
                 <el-pagination
                   @size-change="handleSizeChange"
                   @current-change="handleCurrentChange"
@@ -104,7 +96,6 @@
               </template>
             </el-col>
           </el-row>
-        </div>
       </div>
     </div>
     <!--新增界面-->
